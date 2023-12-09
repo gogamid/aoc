@@ -1,5 +1,14 @@
+import math
+
 L = 0
 R = 1
+
+
+def get_next(curr, dir):
+    if dir == "L":
+        return nodes[curr][L]
+    else:
+        return nodes[curr][R]
 
 
 def steps_to_ZZZ(start, end):
@@ -7,16 +16,33 @@ def steps_to_ZZZ(start, end):
     i = 0
     curr = start
     while curr != end:
-        if nav[i] == "L":
-            curr = nodes[curr][L]
-        else:
-            curr = nodes[curr][R]
+        curr = get_next(curr, nav[i])
         if i + 1 > len(nav) - 1:
             i = 0
         else:
             i = i + 1
         step += 1
     return step
+
+
+def steps_to_nodes_end_Z():
+    keys_A = list(filter(lambda x: x[-1] == "A", list(nodes.keys())))
+    print(keys_A)
+    n = len(nav)
+    steps = []
+    for key in keys_A:
+        i = 0
+        step = 0
+        while key[-1] != "Z":
+            key = get_next(key, nav[i])
+            if i + 1 > n - 1:
+                i = 0
+            else:
+                i += 1
+            step += 1
+        steps.append(step)
+
+    return math.lcm(*steps)
 
 
 if __name__ == "__main__":
@@ -30,9 +56,11 @@ if __name__ == "__main__":
 
     # save node definitions
     line = " "
-    nodes = {}
+    nodes: dict[str, list[str]] = {}
     while line:
         line = f.readline().strip()
+        if not line:
+            break
         key = line[:3]
         left = line[7:10]
         right = line[12:15]
@@ -40,4 +68,8 @@ if __name__ == "__main__":
 
     # A) how many steps to reach ZZZ
     steps = steps_to_ZZZ("AAA", "ZZZ")
+    print(steps)
+
+    # B) how many steps to reach all nodes ending with Z
+    steps = steps_to_nodes_end_Z()
     print(steps)
